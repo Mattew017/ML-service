@@ -1,5 +1,6 @@
 from fastapi import FastAPI
+from app.api.routers.index import index_router
 
 
 def init_routers(app: FastAPI):
-    return app
+    app.include_router(index_router)
