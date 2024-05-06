@@ -6,9 +6,9 @@ class DatasetType(str, Enum):
     TRAIN = "train"
     TEST = "test"
 
+
 @dataclass
 class DatasetData:
-    id: int
     param1: float
     param2: float
     target: float
@@ -16,7 +16,8 @@ class DatasetData:
 
 @dataclass
 class Dataset:
-    id: int = field(init=False)
+    id: int
+    user_id: int
     name: str
-    type: str
+    type: DatasetType
     data: list[DatasetData]

@@ -4,12 +4,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 from .base import Base
 
 
-class UserRole(Base):
+class UserRoleTable(Base):
     __tablename__ = 'user_roles'
     name: Mapped[str]
 
 
-class User(Base):
+class UserTable(Base):
     __tablename__ = 'users'
     username: Mapped[str]
     password: Mapped[str]
