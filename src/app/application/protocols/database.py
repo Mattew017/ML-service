@@ -18,11 +18,19 @@ class UoW(ABC):
 
 class UserDatabaseGateway(ABC):
     @abstractmethod
-    async def add_user(self, user: User) -> None:
+    async def add_user(self, user: User) -> int:
         raise NotImplementedError
 
     @abstractmethod
     async def get_user_by_id(self, id_: int) -> User:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_by_username(self, username: str) -> User | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_all_users(self) -> list[User]:
         raise NotImplementedError
 
 

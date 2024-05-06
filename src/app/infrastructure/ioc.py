@@ -2,7 +2,6 @@ from dishka import (
     AsyncContainer,
     Provider,
     Scope,
-    from_context,
     make_async_container,
     provide,
 )
@@ -11,6 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSessio
 from app.adapters.gateways.dataset import SQLDatasetDatabaseGateway
 from app.adapters.gateways.metric import SQLMetricDatabaseGateway
 from app.adapters.gateways.model import SQLModelDatabaseGateway
+from app.adapters.gateways.user import SQLUserDatabaseGateway
 from app.adapters.unit_of_work import SQLUnitOfWork
 from app.application.protocols.database import (UoW, UserDatabaseGateway,
                                                 DatasetDatabaseGateway, ModelDatabaseGateway, MetricDatabaseGateway)
@@ -34,7 +34,7 @@ class DatabaseAdaptersProvider(Provider):
     scope = Scope.REQUEST
 
     unit_of_work = provide(SQLUnitOfWork, provides=UoW)
-    user_gateway = provide(SQLModelDatabaseGateway, provides=UserDatabaseGateway)
+    user_gateway = provide(SQLUserDatabaseGateway, provides=UserDatabaseGateway)
     dataset_gateway = provide(SQLDatasetDatabaseGateway, provides=DatasetDatabaseGateway)
     model_gateway = provide(SQLModelDatabaseGateway, provides=ModelDatabaseGateway)
     metric_gateway = provide(SQLMetricDatabaseGateway, provides=MetricDatabaseGateway)
@@ -44,5 +44,4 @@ def create_container() -> AsyncContainer:
     return make_async_container(
         SQLSessionProvider(),
         DatabaseAdaptersProvider(),
-
     )

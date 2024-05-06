@@ -9,7 +9,7 @@ class UserRoleEnum(str, Enum):
 
 @dataclass
 class User:
-    id: int = field(init=False)
+    id: int
     username: str
     password: str
     role: UserRoleEnum

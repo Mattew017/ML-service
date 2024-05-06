@@ -4,6 +4,7 @@ from fastapi import Depends
 from fastapi.routing import APIRouter
 
 from app.api.routers.schemas.dataset import CreateDatasetResponse, CreateDatasetRequest
+from app.api.routers.user import get_current_user_id
 from app.application.models.dataset import Dataset
 from app.application.protocols.database import UoW, DatasetDatabaseGateway
 from app.application.usecases.dataset.create_dataset import create_dataset
@@ -15,10 +16,6 @@ import dataclass_factory
 dataset_router = APIRouter(prefix='/dataset', tags=['dataset'], route_class=DishkaRoute,)
 
 
-def get_current_user_id() -> int:
-    return 42
-
-
 @dataset_router.post('/create', response_model=CreateDatasetResponse)
 async def create(create_request: CreateDatasetRequest,
                  uow: FromDishka[UoW],
@@ -28,6 +25,7 @@ async def create(create_request: CreateDatasetRequest,
     factory = dataclass_factory.Factory()
     create_request_dict = create_request.dict()
     create_request_dict['user_id'] = user_id
+    create_request_dict['id'] = 0
     dataset: Dataset = factory.load(create_request_dict, Dataset)
     dateset_id = await create_dataset(dataset, uow, dataset_gateway)
     return {'id': dateset_id}
