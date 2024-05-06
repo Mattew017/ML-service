@@ -13,7 +13,9 @@ from app.application.usecases.dataset.get_all import get_all_user_datasets_by_id
 
 import dataclass_factory
 
-dataset_router = APIRouter(prefix='/dataset', tags=['dataset'], route_class=DishkaRoute,)
+dataset_router = APIRouter(prefix='/dataset', tags=['dataset'],
+                           route_class=DishkaRoute,
+                           dependencies=[Depends(get_current_user_id)])
 
 
 @dataset_router.post('/create', response_model=CreateDatasetResponse)
@@ -32,8 +34,7 @@ async def create(create_request: CreateDatasetRequest,
 
 
 @dataset_router.get('/')
-async def get_by_id(dataset_id: int, dataset_gateway: FromDishka[DatasetDatabaseGateway],
-                    user_id: int = Depends(get_current_user_id)) -> Dataset:
+async def get_by_id(dataset_id: int, dataset_gateway: FromDishka[DatasetDatabaseGateway]) -> Dataset:
     dataset = await get_dataset_by_id(dataset_id, dataset_gateway)
     return dataset
 
