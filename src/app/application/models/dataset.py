@@ -16,8 +16,8 @@ class DatasetData:
 
 @dataclass
 class Dataset:
-    id: int
     user_id: int
     name: str
     type: DatasetType
     data: list[DatasetData]
+    id: int = 0

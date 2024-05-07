@@ -8,9 +8,16 @@ class ModelTypeEnum(str, Enum):
     NEURAL_NETWORK = 'neural_network'
 
 
+model_type_to_db = {
+    ModelTypeEnum.LOGISTIC_REGRESSION: 1,
+    ModelTypeEnum.RANDOM_FOREST: 2,
+    ModelTypeEnum.NEURAL_NETWORK: 3
+}
+
+
 @dataclass
 class Model:
-    id: int
     dataset_id: int
     type: ModelTypeEnum
-    progress: int
+    progress: int = 0
+    id: int = 0

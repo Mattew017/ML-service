@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.models.model import Model
+from app.adapters.models import ModelTable, ModelEvaluationTable
+from app.application.models.model import Model, model_type_to_db
 from app.application.protocols.database import ModelDatabaseGateway
 
 
@@ -9,10 +10,17 @@ class SQLModelDatabaseGateway(ModelDatabaseGateway):
         self.session = session
 
     async def add_train_model(self, model: Model) -> int:
-        raise NotImplementedError
+        type_id = model_type_to_db.get(model.type)
+        model_obj = ModelTable(dataset_id=model.dataset_id, type_id=type_id)
+        self.session.add(model_obj)
+        await self.session.flush()
+        return model_obj.id
 
-    async def eval_model(self, model_id: int, dataset_id: int) -> int:
-        raise NotImplementedError
+    async def add_eval_model(self, model_id: int, dataset_id: int) -> int:
+        eval_model_obj = ModelEvaluationTable(id=model_id, dataset_id=dataset_id)
+        self.session.add(eval_model_obj)
+        await self.session.flush()
+        return eval_model_obj.id
 
     async def get_train_model(self, model_id: int) -> Model:
         raise NotImplementedError

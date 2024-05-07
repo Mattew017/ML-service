@@ -54,7 +54,7 @@ class ModelDatabaseGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def eval_model(self, model_id: int, dataset_id: int) -> int:
+    async def add_eval_model(self, model_id: int, dataset_id: int) -> int:
         raise NotImplementedError
 
     @abstractmethod
