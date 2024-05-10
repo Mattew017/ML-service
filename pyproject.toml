@@ -24,8 +24,9 @@ dependencies = [
     "psycopg==3.*",
     "dishka==1.*",
     "passlib==1.*",
-    "python-jose==3.*",
-    "pydantic-settings==2.*"
+    "pydantic-settings==2.*",
+    "bcrypt==4.*",
+    "dataclass-factory==2.*",
 ]
 [project.optional-dependencies]
 test = [

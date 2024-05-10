@@ -13,7 +13,7 @@ from app.application.models.user import User, UserRoleEnum
 from app.application.protocols.database import UoW, UserDatabaseGateway
 from app.main.settings import settings
 
-user_router = APIRouter(prefix='/user', tags=['user'], route_class=DishkaRoute, )
+user_router = APIRouter(prefix='/user', tags=['user'], route_class=DishkaRoute)
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 security = HTTPBasic()

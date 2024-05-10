@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, Field, asdict
 from enum import Enum
 
 
@@ -21,3 +21,8 @@ class Model:
     type: ModelTypeEnum
     progress: int = 0
     id: int = 0
+
+    def dict(self):
+        return asdict(self)
+
+

@@ -1,10 +1,10 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.routing import APIRouter
 
-from app.api.schemas.dataset import CreateDatasetResponse, CreateDatasetRequest
-from app.api.routers.user import get_current_user_id
+from app.main.api.schemas.dataset import CreateDatasetResponse, CreateDatasetRequest
+from app.main.api.routers.user import get_current_user_id
 from app.application.models.dataset import Dataset
 from app.application.protocols.database import UoW, DatasetDatabaseGateway
 from app.application.usecases.dataset.create_dataset import create_dataset
@@ -35,6 +35,8 @@ async def create(create_request: CreateDatasetRequest,
 @dataset_router.get('/')
 async def get_by_id(dataset_id: int, dataset_gateway: FromDishka[DatasetDatabaseGateway]) -> Dataset:
     dataset = await get_dataset_by_id(dataset_id, dataset_gateway)
+    if dataset is None:
+        raise HTTPException(status_code=404, detail='Dataset not found')
     return dataset
 
 

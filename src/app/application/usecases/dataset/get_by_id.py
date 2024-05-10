@@ -1,5 +1,4 @@
-from app.application.models.dataset import Dataset
-from app.application.protocols.database import DatasetDatabaseGateway, UoW
+from app.application.protocols.database import DatasetDatabaseGateway
 
 
 async def get_dataset_by_id(dataset_id: int,

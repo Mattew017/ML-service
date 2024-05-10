@@ -40,7 +40,7 @@ class DatasetDatabaseGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_dataset_by_id(self, id_: int) -> Dataset:
+    async def get_dataset_by_id(self, id_: int) -> Dataset | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -58,11 +58,11 @@ class ModelDatabaseGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_train_model(self, model_id: int) -> Model:
+    async def get_train_model(self, model_id: int) -> Model | None:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_eval_model(self, model_id: int) -> Model:
+    async def get_eval_model(self, model_id: int) -> Model | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -75,6 +75,14 @@ class ModelDatabaseGateway(ABC):
 
 
 class MetricDatabaseGateway(ABC):
+    @abstractmethod
+    async def add_train_metric(self, model_id: int, metric: Metric) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def add_eval_metric(self, eval_model_id: int, metric: Metric) -> None:
+        raise NotImplementedError
+
     @abstractmethod
     async def get_train_metrics(self, model_id: int) -> list[Metric]:
         raise NotImplementedError

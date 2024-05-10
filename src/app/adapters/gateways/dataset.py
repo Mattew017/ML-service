@@ -1,8 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.adapters.models.datasets import DatasetTable, DatasetDataTable
-from app.application.models.dataset import Dataset, DatasetType, DatasetData
+from app.adapters.models.datasets import DatasetTable, DatasetDataTable, DatasetTypeTable
+from app.application.models.dataset import Dataset, DatasetData
 from app.application.protocols.database import DatasetDatabaseGateway
 
 
@@ -11,7 +11,7 @@ class SQLDatasetDatabaseGateway(DatasetDatabaseGateway):
         self.session = session
 
     async def add_dataset(self, dataset: Dataset) -> int:
-        type_id = 1 if dataset.type == DatasetType.TRAIN else 2
+        type_id = await self.session.scalar(select(DatasetTypeTable.id).where(DatasetTypeTable.name == dataset.type))
         dataset_obj = DatasetTable(user_id=dataset.user_id, type_id=type_id, name=dataset.name)
         self.session.add(dataset_obj)
         await self.session.flush()
@@ -23,14 +23,15 @@ class SQLDatasetDatabaseGateway(DatasetDatabaseGateway):
         self.session.add_all(dataset_data)
         return dataset_obj.id
 
-    async def get_dataset_by_id(self, id_: int) -> Dataset:
+    async def get_dataset_by_id(self, id_: int) -> Dataset | None:
         result = await self.session.get(DatasetTable, id_)
         dataset_data = await self.session.execute(select(DatasetDataTable).where(DatasetDataTable.dataset_id == id_))
-        dataset_type = DatasetType.TRAIN if result.type_id == 1 else DatasetType.TEST
+        if not result:
+            return None
         return Dataset(id=result.id,
                        user_id=result.user_id,
                        name=result.name,
-                       type=dataset_type,
+                       type=result.type.name,
                        data=[DatasetData(param1=i.param1, param2=i.param2, target=i.target)
                              for i in dataset_data.scalars().all()])
 
@@ -42,11 +43,10 @@ class SQLDatasetDatabaseGateway(DatasetDatabaseGateway):
         for dataset in all_datasets:
             dataset_data = await self.session.execute(
                 select(DatasetDataTable).where(DatasetDataTable.dataset_id == dataset.id))
-            dataset_type = DatasetType.TRAIN if dataset.type_id == 1 else DatasetType.TEST
             result.append(Dataset(id=dataset.id,
                                   user_id=dataset.user_id,
                                   name=dataset.name,
-                                  type=dataset_type,
+                                  type=dataset.type.name,
                                   data=[DatasetData(param1=i.param1, param2=i.param2, target=i.target)
                                         for i in dataset_data.scalars().all()]))
 
