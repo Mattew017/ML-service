@@ -9,7 +9,7 @@ from app.main.api.routers.user import get_current_user_id
 from app.main.api.schemas.model import GetModelResponseSchema
 from app.application.models.metric import MetricsEnum, Metric
 from app.application.models.model import Model, ModelTypeEnum
-from app.application.protocols.database import UoW, ModelDatabaseGateway, MetricDatabaseGateway
+from app.application.protocols.database import UoW, ModelDatabaseGateway, MetricDatabaseGateway, DatasetDatabaseGateway
 
 model_router = APIRouter(prefix='/model', tags=[' model'],
                          route_class=DishkaRoute,
@@ -30,8 +30,12 @@ async def create_train_model(dataset_id: int,
                              model_type: ModelTypeEnum,
                              uow: FromDishka[UoW],
                              model_gateway: FromDishka[ModelDatabaseGateway],
+                             dataset_gateway: FromDishka[DatasetDatabaseGateway],
                              metric_gateway: FromDishka[MetricDatabaseGateway]
                              ) -> int:
+    dataset = await dataset_gateway.get_dataset_by_id(dataset_id)
+    if not dataset:
+        raise HTTPException(status_code=404, detail='Dataset not found')
     model = Model(dataset_id=dataset_id, type=model_type)
     model_id = await model_gateway.add_train_model(model)
     metrics = create_metrics()
@@ -46,8 +50,12 @@ async def create_eval_model(dataset_id: int,
                             model_id: int,
                             uow: FromDishka[UoW],
                             model_gateway: FromDishka[ModelDatabaseGateway],
+                            dataset_gateway: FromDishka[DatasetDatabaseGateway],
                             metric_gateway: FromDishka[MetricDatabaseGateway]
                             ) -> int:
+    dataset = await dataset_gateway.get_dataset_by_id(dataset_id)
+    if not dataset:
+        raise HTTPException(status_code=404, detail='Dataset not found')
     eval_model_id = await model_gateway.add_eval_model(model_id, dataset_id)
     metrics = create_metrics()
     for metric in metrics:
@@ -101,3 +109,19 @@ async def get_all_eval_models(model_gateway: FromDishka[ModelDatabaseGateway],
         model_metrics = await metric_gateway.get_eval_metrics(model.id)
         result.append(GetModelResponseSchema(model=model, metrics=model_metrics))
     return result
+
+
+@model_router.delete('/train/{model_id}')
+async def delete_train_model(model_id: int,
+                             model_gateway: FromDishka[ModelDatabaseGateway],
+                             uow: FromDishka[UoW]):
+    await model_gateway.delete_train_model(model_id)
+    await uow.commit()
+
+
+@model_router.delete('/eval/{eval_model_id}')
+async def delete_eval_model(eval_model_id: int,
+                            model_gateway: FromDishka[ModelDatabaseGateway],
+                            uow: FromDishka[UoW]):
+    await model_gateway.delete_eval_model(eval_model_id)
+    await uow.commit()

@@ -33,6 +33,10 @@ class UserDatabaseGateway(ABC):
     async def get_all_users(self) -> list[User]:
         raise NotImplementedError
 
+    @abstractmethod
+    async def delete_user(self, user_id: int) -> None:
+        raise NotImplementedError
+
 
 class DatasetDatabaseGateway(ABC):
     @abstractmethod
@@ -45,6 +49,10 @@ class DatasetDatabaseGateway(ABC):
 
     @abstractmethod
     async def get_all_user_datasets(self, user_id: int) -> list[Dataset]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_dataset(self, dataset_id: int) -> None:
         raise NotImplementedError
 
 
@@ -71,6 +79,14 @@ class ModelDatabaseGateway(ABC):
 
     @abstractmethod
     async def get_all_eval_models(self, dataset_id: int) -> list[Model]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_train_model(self, model_id: int) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def delete_eval_model(self, eval_model_id: int) -> None:
         raise NotImplementedError
 
 

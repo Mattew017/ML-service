@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.models import ModelTable, ModelEvaluationTable
@@ -60,3 +60,12 @@ class SQLModelDatabaseGateway(ModelDatabaseGateway):
                       progress=model.progress,
                       type=model.train_model.model_type.name)
                 for model in all_models]
+
+    async def delete_train_model(self, model_id: int) -> None:
+        stmt = delete(ModelTable).where(ModelTable.id == model_id)
+        await self.session.execute(stmt)
+
+    async def delete_eval_model(self, eval_model_id: int) -> None:
+        stmt = delete(ModelEvaluationTable).where(ModelEvaluationTable.id == eval_model_id)
+        await self.session.execute(stmt)
+

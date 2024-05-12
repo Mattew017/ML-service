@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.models import UserTable
@@ -33,3 +33,8 @@ class SQLUserDatabaseGateway(UserDatabaseGateway):
         res = await self.session.execute(select(UserTable))
         res = res.scalars().all()
         return [User(id=i.id, username=i.username, password=i.password, role=UserRoleEnum.USER) for i in res]
+
+    async def delete_user(self, user_id: int) -> None:
+        stmt = delete(UserTable).where(UserTable.id == user_id)
+        await self.session.execute(stmt)
+

@@ -45,3 +45,12 @@ async def get_all(dataset_gateway: FromDishka[DatasetDatabaseGateway],
                   user_id: int = Depends(get_current_user_id)) -> list[Dataset]:
     res = await get_all_user_datasets_by_id(user_id, dataset_gateway)
     return res
+
+
+@dataset_router.delete('/{dataset_id}')
+async def delete_by_id(dataset_id: int,
+                       uow: FromDishka[UoW],
+                       dataset_gateway: FromDishka[DatasetDatabaseGateway]):
+    await dataset_gateway.delete_dataset(dataset_id)
+    await uow.commit()
+

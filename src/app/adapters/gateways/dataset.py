@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.models.datasets import DatasetTable, DatasetDataTable, DatasetTypeTable
@@ -51,3 +51,9 @@ class SQLDatasetDatabaseGateway(DatasetDatabaseGateway):
                                         for i in dataset_data.scalars().all()]))
 
         return result
+
+    async def delete_dataset(self, dataset_id: int) -> None:
+        stmt = delete(DatasetTable).where(DatasetTable.id == dataset_id)
+        await self.session.execute(stmt)
+
+

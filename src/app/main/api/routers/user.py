@@ -85,3 +85,11 @@ async def get_all_users(user_gateway: FromDishka[UserDatabaseGateway]) -> list[U
     all_users = await user_gateway.get_all_users()
 
     return all_users
+
+
+@user_router.delete('/')
+async def delete_user(user_gateway: FromDishka[UserDatabaseGateway],
+                      uow: FromDishka[UoW],
+                      user_id: int = Depends(get_current_user_id)):
+    await user_gateway.delete_user(user_id)
+    await uow.commit()
