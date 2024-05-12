@@ -2,7 +2,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.models.datasets import DatasetTable, DatasetDataTable, DatasetTypeTable
-from app.application.models.dataset import Dataset, DatasetData
+from app.application.models.dataset import Dataset, DatasetData, DatasetType
 from app.application.protocols.database import DatasetDatabaseGateway
 
 
@@ -35,8 +35,10 @@ class SQLDatasetDatabaseGateway(DatasetDatabaseGateway):
                        data=[DatasetData(param1=i.param1, param2=i.param2, target=i.target)
                              for i in dataset_data.scalars().all()])
 
-    async def get_all_user_datasets(self, user_id: int) -> list[Dataset]:
-        stmt = select(DatasetTable).where(DatasetTable.user_id == user_id)
+    async def get_all_user_datasets(self, user_id: int, dataset_type: DatasetType) -> list[Dataset]:
+        type_id = await self.session.scalar(select(DatasetTypeTable.id).where(DatasetTypeTable.name == dataset_type))
+        stmt = (select(DatasetTable).where(DatasetTable.user_id == user_id).
+                where(DatasetTable.type_id == type_id))
         res = await self.session.execute(stmt)
         all_datasets = res.scalars().all()
         result = []

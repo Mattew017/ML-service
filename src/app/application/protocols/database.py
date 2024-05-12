@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.application.models.dataset import Dataset
+from app.application.models.dataset import Dataset, DatasetType
 from app.application.models.metric import Metric
 from app.application.models.model import Model
 from app.application.models.user import User
@@ -48,7 +48,7 @@ class DatasetDatabaseGateway(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all_user_datasets(self, user_id: int) -> list[Dataset]:
+    async def get_all_user_datasets(self, user_id: int, dataset_type: DatasetType) -> list[Dataset]:
         raise NotImplementedError
 
     @abstractmethod
